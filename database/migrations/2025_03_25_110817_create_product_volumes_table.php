@@ -13,7 +13,11 @@ return new class extends Migration
     {
         Schema::create('product_volumes', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+//            $table->string('name');
+            $table->foreignId('product_id')->constrained('products');
+            $table->foreignId('user_id')->constrained('users');
+            $table->boolean('like')->default(false);
+            $table->boolean('shopping')->default(false);
             $table->timestamps();
         });
     }

@@ -16,6 +16,7 @@ use App\MoonShine\Resources\PostResource;
 use App\MoonShine\Resources\CategoryResource;
 use App\MoonShine\Resources\ProductResource;
 use App\MoonShine\Resources\VolumeResource;
+use App\MoonShine\Resources\ImageResource;
 
 class MoonShineServiceProvider extends ServiceProvider
 {
@@ -43,4 +44,14 @@ class MoonShineServiceProvider extends ServiceProvider
             ])
         ;
     }
+
+    protected function menu(): array
+    {
+        return [
+            MenuGroup::make('Media', [
+                MenuItem::make('Images', new ImageResource())
+            ]),
+        ];
+    }
 }
+

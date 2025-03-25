@@ -25,4 +25,13 @@ class Product extends Model
     {
         return $this->belongsTo(ProductVolume::class, 'volume_id', 'id');
     }
+
+    /**
+     * Get all images for the product.
+     */
+    public function images()
+    {
+        return $this->morphMany(Image::class, 'imageable');
+    }
 }
+
