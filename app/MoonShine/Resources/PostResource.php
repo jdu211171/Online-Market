@@ -14,7 +14,7 @@ use MoonShine\UI\Fields\Text;
 use MoonShine\UI\Fields\Textarea;
 use MoonShine\UI\Fields\Image;
 use MoonShine\UI\Fields\Date;
-use MoonShine\UI\Fields\BelongsTo;
+use MoonShine\Laravel\Fields\Relationships\BelongsTo;
 use MoonShine\Contracts\UI\FieldContract;
 use MoonShine\Contracts\UI\ComponentContract;
 
@@ -73,7 +73,7 @@ class PostResource extends ModelResource
                     PostCategoryResource::class)
                     ->afterFill(
                         fn($field) => $field->setColumn('category_id')
-                    )->nullable(),
+                    ),
             ])
         ];
     }
@@ -114,8 +114,9 @@ class PostResource extends ModelResource
         return [
             'title' => ['required', 'string', 'max:255'],
             'content' => ['required', 'string'],
-            'image' => ['nullable', 'string'],
+            'image' => ['nullable', 'image'], // was: ['nullable', 'string'],
             'category_id' => ['required', 'exists:post_categories,id'],
         ];
     }
 }
+

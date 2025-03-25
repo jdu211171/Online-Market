@@ -71,9 +71,8 @@ class MoonShineUserResource extends ModelResource
 
             Text::make(__('moonshine::ui.resource.name'), 'name'),
 
-            Image::make(__('moonshine::ui.resource.avatar'), 'avatar')->modifyRawValue(fn (
-                ?string $raw
-            ): string => $raw ?? ''),
+            Image::make(__('moonshine::ui.resource.avatar'), 'avatar')
+                ->modifyRawValue(fn ($raw): string => is_array($raw) ? implode(', ', $raw) : ($raw ?? '')),
 
             Date::make(__('moonshine::ui.resource.created_at'), 'created_at')
                 ->format("d.m.Y")
