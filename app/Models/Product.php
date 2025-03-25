@@ -7,13 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model
 {
     protected $fillable = [
+        'product_id',
         'name',
         'description',
         'price',
         'sale_price',
         'category_id',
-        'volume_id',
-        'stock_quantity'
+        'volume_id', // Bu 'volume_id' emas!
+        'stock_quantity',
     ];
 
     public function category()
@@ -23,15 +24,10 @@ class Product extends Model
 
     public function volume()
     {
-        return $this->belongsTo(ProductVolume::class, 'volume_id', 'id');
+        return $this->belongsTo(Volume::class, 'volume_id', 'id');
     }
-
-    /**
-     * Get all images for the product.
-     */
     public function images()
     {
         return $this->morphMany(Image::class, 'imageable');
     }
 }
-

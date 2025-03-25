@@ -1,68 +1,88 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\MoonShine\Resources;
 
+use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Image;
-use MoonShine\Resources\Resource;
-use MoonShine\Fields\ID;
-use MoonShine\Fields\Text;
-use MoonShine\Fields\Image as ImageField;
-use MoonShine\Fields\Number;
-use MoonShine\Fields\Relationships\MorphTo;
-use MoonShine\Decorations\Block;
-use MoonShine\Fields\Date;
 
-class ImageResource extends Resource
+use MoonShine\Laravel\Fields\Relationships\MorphTo;
+use MoonShine\Laravel\Resources\ModelResource;
+use MoonShine\UI\Components\Layout\Box;
+use MoonShine\UI\Fields\ID;
+use MoonShine\Contracts\UI\FieldContract;
+use MoonShine\Contracts\UI\ComponentContract;
+use MoonShine\UI\Fields\Image as ImageField;
+
+/**
+ * @extends ModelResource<Image>
+ */
+class ImageResource extends ModelResource
 {
     protected string $model = Image::class;
 
-    protected string $title = 'Images';
 
-    public function fields(): array
+    /**
+     * @return list<FieldContract>
+     */
+    protected function indexFields(): iterable
     {
         return [
-            Block::make([
-                ID::make()->sortable(),
-                ImageField::make('Preview', 'path')
-                    ->disk('public')
-                    ->dir('images')
-                    ->allowedExtensions(['jpg', 'jpeg', 'png', 'gif', 'webp']),
-                Text::make('Path'),
-                Text::make('Original Filename'),
-                Text::make('MIME Type'),
-                Number::make('Size (bytes)'),
-                MorphTo::make('Related To', 'imageable')
-                    ->searchable(),
-                Date::make('Created At')->sortable(),
-                Date::make('Updated At')->sortable(),
+            ID::make()->sortable(),
+            ImageField::make('Path'),
+            MorphTo::make('ImageAble','imageable',fn($item)=>$item->id . ".". $item->name)
+            ->types([
+                 Category::class=>['Categories','Categories'],
+                 Product::class=>['Products','Products'],
             ]),
         ];
     }
 
-    public function rules(Model $item): array
+    /**
+     * @return list<ComponentContract|FieldContract>
+     */
+    protected function formFields(): iterable
     {
         return [
-            'path' => 'required|string',
+            Box::make([
+                ID::make(),
+                ImageField::make('Path'),
+                MorphTo::make('ImageAble','imageable',fn($item)=>$item->id . ".". $item->name)
+                    ->types([
+                        Category::class=>['Categories','Categories'],
+                        Product::class=>['Products','Products'],
+                    ]),
+            ])
         ];
     }
 
-    public function search(): array
-    {
-        return ['id', 'path', 'original_filename'];
-    }
-
-    public function filters(): array
+    /**
+     * @return list<FieldContract>
+     */
+    protected function detailFields(): iterable
     {
         return [
-            //
+            ID::make(),
+            ImageField::make('Path'),
+            MorphTo::make('ImageAble','imageable',fn($item)=>$item->id . ".". $item->name)
+                ->types([
+                Category::class=>['Categories','Categories'],
+                Product::class=>['Products','Products'],
+            ]),
         ];
     }
 
-    public function actions(): array
+    /**
+     * @param Image $item
+     *
+     * @return array<string, string[]|string>
+     * @see https://laravel.com/docs/validation#available-validation-rules
+     */
+    protected function rules(mixed $item): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 }

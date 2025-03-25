@@ -37,7 +37,7 @@ services:
         volumes:
             - market_database:/var/lib/mysql
         networks:
-            - market_network
+            - market_network  # ❌ Noto‘g‘ri "marker_network" emas, "market_network" bo‘lishi kerak!
         ports:
             -   "3307:3306"
     market_redis:

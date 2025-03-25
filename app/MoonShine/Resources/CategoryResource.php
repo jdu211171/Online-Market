@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\MoonShine\Resources;
 
+use MoonShine\Laravel\Fields\Relationships\BelongsTo;
+use MoonShine\Laravel\Fields\Relationships\HasMany;
+use \MoonShine\UI\Fields\Text;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Category;
 
@@ -12,9 +15,6 @@ use MoonShine\UI\Components\Layout\Box;
 use MoonShine\UI\Fields\ID;
 use MoonShine\Contracts\UI\FieldContract;
 use MoonShine\Contracts\UI\ComponentContract;
-use MoonShine\UI\Fields\Select;
-use MoonShine\UI\Fields\Text;
-use MoonShine\UI\Layout;
 
 /**
  * @extends ModelResource<Category>
@@ -32,17 +32,9 @@ class CategoryResource extends ModelResource
     {
         return [
             ID::make()->sortable(),
-            Text::make('Name')->sortable(),
-            Select::make('Parent', 'parent_id')
-                ->options(function() {
-                    $categories = Category::query()->pluck('name', 'id')->toArray();
-                    $result = [];
-                    foreach ($categories as $id => $name) {
-                        $result[(string)$id] = (string)$name;
-                    }
-                    return $result;
-                })
-                ->nullable(),
+            Text::make('name'),
+            Text::make('parent_id')->nullable(),
+            HasMany::make('Images','images')
         ];
     }
 
@@ -54,21 +46,14 @@ class CategoryResource extends ModelResource
         return [
             Box::make([
                 ID::make(),
-                Text::make('Name'),
-                Select::make('Parent', 'parent_id')
-                    ->options(function() {
-                        $categories = Category::query()->pluck('name', 'id')->toArray();
-                        $result = [];
-                        foreach ($categories as $id => $name) {
-                            $result[(string)$id] = (string)$name;
-                        }
-                        return $result;
-                    })
-                    ->nullable()
-            ])
+                Text::make('name'),
+                BelongsTo::make('parent', 'parent', fn($item)=>"$item->id. $item->name",CategoryResource::class)->nullable(),
+
+            ]),
+            HasMany::make('Images','images')
+
         ];
     }
-
     /**
      * @return list<FieldContract>
      */
@@ -76,17 +61,13 @@ class CategoryResource extends ModelResource
     {
         return [
             ID::make(),
-            Text::make('Name'),
-            Select::make('Parent', 'parent_id')
-                ->options(function() {
-                    $categories = Category::query()->pluck('name', 'id')->toArray();
-                    $result = [];
-                    foreach ($categories as $id => $name) {
-                        $result[(string)$id] = (string)$name;
-                    }
-                    return $result;
-                })
-                ->nullable()
+            Text::make('name'),
+            Text::make('parent_id')->nullable(),
+            BelongsTo::make('parent', 'parent', fn($item)=>"$item->id. $item->name",CategoryResource::class)->nullable(),
+            HasMany::make('Products', 'products', fn($item)=>"$item->id. $item->name",
+                ProductResource::class),
+            HasMany::make('Images','images')
+
         ];
     }
 
@@ -99,10 +80,5 @@ class CategoryResource extends ModelResource
     protected function rules(mixed $item): array
     {
         return [];
-    }
-
-    public function build(): Layout
-    {
-        return parent::build();
     }
 }

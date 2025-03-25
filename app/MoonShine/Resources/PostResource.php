@@ -4,19 +4,21 @@ declare(strict_types=1);
 
 namespace App\MoonShine\Resources;
 
+use App\Models\PostCategory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Post;
 
+use MoonShine\Laravel\Fields\Relationships\BelongsTo;
 use MoonShine\Laravel\Resources\ModelResource;
 use MoonShine\UI\Components\Layout\Box;
-use MoonShine\UI\Fields\ID;
-use MoonShine\UI\Fields\Text;
-use MoonShine\UI\Fields\Textarea;
-use MoonShine\UI\Fields\Image;
 use MoonShine\UI\Fields\Date;
-use MoonShine\Laravel\Fields\Relationships\BelongsTo;
+use MoonShine\UI\Fields\ID;
 use MoonShine\Contracts\UI\FieldContract;
 use MoonShine\Contracts\UI\ComponentContract;
+use MoonShine\UI\Fields\Image;
+use MoonShine\UI\Fields\Text;
+use MoonShine\UI\Fields\Textarea;
+use Illuminate\Support\Str;
 
 /**
  * @extends ModelResource<Post>
@@ -36,18 +38,10 @@ class PostResource extends ModelResource
             ID::make()->sortable(),
             Text::make('Title')->sortable(),
             Textarea::make('Content')
-                ->customAttributes([
-                    'rows'=>1,
-                ]),
+            ->customAttributes([
+                'rows'=>1,
+            ]),
             Image::make('Image'),
-            BelongsTo::make(
-                'Category',
-                'postCategory',
-                fn($item)=>"$item->id. $item->name",
-                PostCategoryResource::class
-            )->afterFill(
-                fn($field) => $field->setColumn('category_id')
-            ),
             Date::make('Published At','updated_at')->sortable()
         ];
     }
@@ -62,9 +56,9 @@ class PostResource extends ModelResource
                 ID::make(),
                 Text::make('Title', 'title'),
                 Textarea::make('Content')
-                    ->customAttributes([
-                        'rows'=>6,
-                    ]),
+                ->customAttributes([
+                    'rows'=>6,
+                ]),
                 Image::make('Image', 'image'),
                 BelongsTo::make(
                     'Category',
@@ -73,7 +67,7 @@ class PostResource extends ModelResource
                     PostCategoryResource::class)
                     ->afterFill(
                         fn($field) => $field->setColumn('category_id')
-                    ),
+                    )->nullable(),
             ])
         ];
     }
@@ -87,9 +81,9 @@ class PostResource extends ModelResource
             ID::make(),
             Text::make('Title'),
             Textarea::make('Content')
-                ->customAttributes([
-                    'rows'=>1,
-                ]),
+            ->customAttributes([
+                'rows'=>1,
+            ]),
             Image::make('Image'),
             BelongsTo::make('Category',
                 'postCategory',
@@ -98,8 +92,6 @@ class PostResource extends ModelResource
                 ->afterFill(
                     fn($field) => $field->setColumn('category_id')
                 )->nullable(),
-            Date::make('Created At', 'created_at'),
-            Date::make('Updated At', 'updated_at'),
         ];
     }
 
@@ -112,11 +104,10 @@ class PostResource extends ModelResource
     protected function rules(mixed $item): array
     {
         return [
-            'title' => ['required', 'string', 'max:255'],
-            'content' => ['required', 'string'],
-            'image' => ['nullable', 'image'], // was: ['nullable', 'string'],
-            'category_id' => ['required', 'exists:post_categories,id'],
+            'title' => ['required', 'max:255'],
+            'content' => ['required' ],
+            'image' => ['required', 'max:255'],
+            'category_id' => ['required', 'max:255'],
         ];
     }
 }
-

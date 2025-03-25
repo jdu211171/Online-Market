@@ -4,17 +4,18 @@ declare(strict_types=1);
 
 namespace App\MoonShine\Resources;
 
+use Dflydev\DotAccessData\Data;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\PostCategory;
 
+use MoonShine\Laravel\Fields\Relationships\HasMany;
 use MoonShine\Laravel\Resources\ModelResource;
 use MoonShine\UI\Components\Layout\Box;
+use MoonShine\UI\Fields\Date;
 use MoonShine\UI\Fields\ID;
 use MoonShine\Contracts\UI\FieldContract;
 use MoonShine\Contracts\UI\ComponentContract;
 use MoonShine\UI\Fields\Text;
-use MoonShine\UI\Fields\Date;
-use MoonShine\Laravel\Fields\Relationships\HasMany;
 
 /**
  * @extends ModelResource<PostCategory>
@@ -23,7 +24,7 @@ class PostCategoryResource extends ModelResource
 {
     protected string $model = PostCategory::class;
 
-    protected string $title = 'PostCategories';
+    protected string $title = 'Categories';
 
     /**
      * @return list<FieldContract>
@@ -45,7 +46,7 @@ class PostCategoryResource extends ModelResource
         return [
             Box::make([
                 ID::make(),
-                Text::make('Title', 'name'),
+                Text::make('Title', 'name')
             ])
         ];
     }
@@ -75,4 +76,3 @@ class PostCategoryResource extends ModelResource
         return [];
     }
 }
-
